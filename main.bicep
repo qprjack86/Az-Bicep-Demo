@@ -97,7 +97,13 @@ resource dcinstall 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'dcinstall'
   location: location
   kind: 'AzurePowerShell'
-  properties: {
+  identity:{
+    type:'UserAssigned'
+    userAssignedIdentities:{
+    '/subscriptions/1d997f13-84f0-4047-b288-ffefd5137b68/resourcegroups/kailice/providers/Microsoft.ManagedIdentity/userAssignedIdentities/MI_Bicep': {}  
+      }
+    }
+   properties: {
     forceUpdateTag: utcValue
     azPowerShellVersion: '6.4'
     primaryScriptUri: 'https://raw.githubusercontent.com/qprjack86/Az-Bicep-Demo/main/scripts/DCSetup.ps1'
