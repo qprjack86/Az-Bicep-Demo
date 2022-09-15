@@ -1,4 +1,6 @@
 // Deployment parameters
+param utcValue string = utcNow()
+
 @description('Location to depoloy all resources. Leave this value as-is to inherit the location from the parent resource group.')
 param location string = resourceGroup().location
 
@@ -48,6 +50,7 @@ param subscriptionId string = '1d997f13-84f0-4047-b288-ffefd5137b68'
 param keyVaultResourceGroup string = 'kailice'
 param keyVaultName string = 'kalicekeyvault'
 
+
 //@description('Administrator password for both the domain controller and workstation virtual machines.')
 //@minLength(12)
 //@maxLength(123)
@@ -89,6 +92,21 @@ module domainController 'modules/vm.bicep' = {
     adminPassword: kv.getSecret('DemoVMPassword')
   }
 }
+
+resource runPowerShellInlineWithOutput 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'runPowerShellInlineWithOutput'
+  location: location
+  kind: 'AzurePowerShell'
+  properties: {
+    forceUpdateTag: utcValue
+    azPowerShellVersion: '6.4'
+    primaryScriptUri: 'https://raw.githubusercontent.com/Azure/azure-docs-bicep-samples/main/samples/deployment-script/inlineScript.ps1'
+    timeout: 'PT1H'
+    cleanupPreference: 'OnSuccess'
+    retentionInterval: 'P1D'
+  }
+}
+
 
 // Use PowerShell DSC to deploy Active Directory Domain Services on the domain controller
 //resource domainControllerConfiguration 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
