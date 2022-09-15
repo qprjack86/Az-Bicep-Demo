@@ -33,7 +33,7 @@ jobs:
       with:
         inlineScript: |
           #!/bin/bash
-          az group create --name ${{ secrets.Azure_RG }} --location ${{ env.ResourceGroupLocation }}
+          az group create --name ${{ secrets.Azure_RG }} --location ${{ secrets.ResourceGroupLocation }}
 
     - name: Deploy Azure Bicep
       uses: Azure/arm-deploy@v1
