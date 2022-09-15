@@ -7,9 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+  
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -18,33 +16,28 @@ jobs:
   AzureBicepDeploy:
     name: 'AzureBicepDeploy'
     runs-on: ubuntu-latest
-    env:
-      ResourceGroupName: tamops-bicep-rg
-      ResourceGroupLocation: "AustraliaEast"
-    environment: production
-
     steps:
 
-    - uses: actions/checkout@v2
-
+    - uses: actions/checkout@main
+    #Login to Azure
     - uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+        creds: ${{ secrets.AZURE_Login }}
+    #Deploy Bicep File
     - name: Azure Bicep Build
       run: |
-        az bicep build --file BicepFiles/main.bicep
+        az bicep build --file ./main.bicep
         
     - name: Az CLI Create Resource Group
       uses: Azure/CLI@v1
       with:
         inlineScript: |
           #!/bin/bash
-          az group create --name ${{ env.ResourceGroupName }} --location ${{ env.ResourceGroupLocation }}
+          az group create --name ${{ secrets.Azure_RG }} --location ${{ env.ResourceGroupLocation }}
 
     - name: Deploy Azure Bicep
       uses: Azure/arm-deploy@v1
       with:
-        resourceGroupName: ${{ env.ResourceGroupName }}
-        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ secrets.Azure_RG }}
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         template: ./main.json 
