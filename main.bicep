@@ -100,7 +100,7 @@ resource runPowerShellInlineWithOutput 'Microsoft.Resources/deploymentScripts@20
   properties: {
     forceUpdateTag: utcValue
     azPowerShellVersion: '6.4'
-    primaryScriptUri: 'https://raw.githubusercontent.com/Azure/azure-docs-bicep-samples/main/samples/deployment-script/inlineScript.ps1'
+    primaryScriptUri: 'https://raw.githubusercontent.com/qprjack86/Az-Bicep-Demo/main/scripts/DCSetup.ps1'
     timeout: 'PT1H'
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
