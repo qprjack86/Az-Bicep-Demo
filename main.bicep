@@ -33,21 +33,26 @@ param domainControllerName string = 'DC01'
 param virtualMachineSize string = 'Standard_DS1_v2'
 
 // Domain parameters
-@description('FQDN for the Active Directory domain (e.g. contoso.com).')
-@minLength(3)
-@maxLength(255)
-param domainFQDN string = 'kailice.uk'
+//@description('FQDN for the Active Directory domain (e.g. contoso.com).')
+//@minLength(3)
+//@maxLength(255)
+//param domainFQDN string = 'kailice.uk'
 
 @description('Administrator username for both the domain controller and workstation virtual machines.')
 @minLength(1)
 @maxLength(20)
 param adminUsername string = 'azureadmin'
 
-@description('Administrator password for both the domain controller and workstation virtual machines.')
-@minLength(12)
-@maxLength(123)
-@secure()
-param adminPassword string
+@description('Key Vault Settings')
+param subscriptionId string = '1d997f13-84f0-4047-b288-ffefd5137b68'
+param keyVaultResourceGroup string = 'kailice'
+param keyVaultName string = 'kalicekeyvault'
+
+//@description('Administrator password for both the domain controller and workstation virtual machines.')
+//@minLength(12)
+//@maxLength(123)
+//@secure()
+//param adminPassword  
 
 // Deploy the virtual network
 module virtualNetwork 'modules/network.bicep' = {
@@ -60,6 +65,11 @@ module virtualNetwork 'modules/network.bicep' = {
     subnetAddressRange: subnetAddressRange
     allowedSourceIPAddress: allowedSourceIPAddress
   }
+}
+
+resource kv 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name:keyVaultName
+  scope:resourceGroup(subscriptionId,keyVaultResourceGroup)
 }
 
 // Deploy the domain controller
@@ -76,57 +86,57 @@ module domainController 'modules/vm.bicep' = {
     vmVersion: 'latest'
     vmStorageAccountType: 'StandardSSD_LRS'
     adminUsername: adminUsername
-    adminPassword: adminPassword
+    adminPassword: kv.getSecret('DemoVMPassword')
   }
 }
 
 // Use PowerShell DSC to deploy Active Directory Domain Services on the domain controller
-resource domainControllerConfiguration 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
-  name: '${domainControllerName}/Microsoft.Powershell.DSC'
-  dependsOn: [
-    domainController
-  ]
-  location: location
-  properties: {
-    publisher: 'Microsoft.Powershell'
-    type: 'DSC'
-    typeHandlerVersion: '2.77'
-    autoUpgradeMinorVersion: true
-    settings: {
-      ModulesUrl: 'https://github.com/qprjack86/Az-Bicep-Demo/raw/main/scripts/Deploy-DomainServices.zip'
-      ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
-      Properties: {
-        domainFQDN: domainFQDN
-        adminCredential: {
-          UserName: adminUsername
-          Password: 'PrivateSettingsRef:adminPassword'
-        }
-      }
-    }
-    protectedSettings: {
-      Items: {
-          adminPassword: adminPassword
-      }
-    }
-  }
-}
+//resource domainControllerConfiguration 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
+//  name: '${domainControllerName}/Microsoft.Powershell.DSC'
+//  dependsOn: [
+//    domainController
+//  ]
+//  location: location
+//  properties: {
+//    publisher: 'Microsoft.Powershell'
+//    type: 'DSC'
+//    typeHandlerVersion: '2.77'
+//    autoUpgradeMinorVersion: true
+//    settings: {
+//      ModulesUrl: 'https://github.com/qprjack86/Az-Bicep-Demo/raw/main/scripts/Deploy-DomainServices.zip'
+//      ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
+//      Properties: {
+//        domainFQDN: domainFQDN
+//        adminCredential: {
+//          UserName: adminUsername
+//          Password: 'PrivateSettingsRef:adminPassword'
+//        }
+//      }
+//    }
+//    protectedSettings: {
+//      Items: {
+//          adminPassword: kv.getSecret('DemoVMPassword')
+//      }
+//    }
+//  }
+//}
 
 // Update the virtual network with the domain controller as the primary DNS server
-module virtualNetworkDNS 'modules/network.bicep' = {
-  name: 'virtualNetworkDNS'
-  dependsOn: [
-    domainControllerConfiguration
-  ]
-  params: {
-    location: location
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkAddressSpace: virtualNetworkAddressSpace
-    subnetName: subnetName
-    subnetAddressRange: subnetAddressRange
-    allowedSourceIPAddress: allowedSourceIPAddress
-    dnsServerIPAddress: domainController.outputs.privateIpAddress
-  }
-}
+//module virtualNetworkDNS 'modules/network.bicep' = {
+//  name: 'virtualNetworkDNS'
+//  dependsOn: [
+//    domainControllerConfiguration
+//  ]
+//  params: {
+//    location: location
+//    virtualNetworkName: virtualNetworkName
+//    virtualNetworkAddressSpace: virtualNetworkAddressSpace
+//    subnetName: subnetName
+//    subnetAddressRange: subnetAddressRange
+//    allowedSourceIPAddress: allowedSourceIPAddress
+//    dnsServerIPAddress: domainController.outputs.privateIpAddress
+//  }
+//}
 
 // Deploy the workstation once the virtual network's primary DNS server has been updated to the domain controller
 //module workstation 'modules/vm.bicep' = {
