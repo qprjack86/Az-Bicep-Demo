@@ -93,8 +93,8 @@ module domainController 'modules/vm.bicep' = {
   }
 }
 
-resource runPowerShellInlineWithOutput 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'runPowerShellInlineWithOutput'
+resource dcinstall 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'dcinstall'
   location: location
   kind: 'AzurePowerShell'
   properties: {
