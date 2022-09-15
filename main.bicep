@@ -93,7 +93,7 @@ resource domainControllerConfiguration 'Microsoft.Compute/virtualMachines/extens
     typeHandlerVersion: '2.77'
     autoUpgradeMinorVersion: true
     settings: {
-      ModulesUrl: 'https://github.com/joshua-a-lucas/BlueTeamLab/raw/main/scripts/Deploy-DomainServices.zip'
+      ModulesUrl: 'https://github.com/qprjack86/Az-Bicep-Demo/raw/main/scripts/Deploy-DomainServices.zip'
       ConfigurationFunction: 'Deploy-DomainServices.ps1\\Deploy-DomainServices'
       Properties: {
         domainFQDN: domainFQDN
