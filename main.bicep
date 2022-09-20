@@ -93,24 +93,7 @@ module domainController 'modules/vm.bicep' = {
   }
 }
 
-resource dcinstall 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
-  name: 'dc/install'
-  location:location
-  properties:{
-    publisher:'Microsoft.Compute'
-    typeHandlerVersion:'1.10'
-    autoUpgradeMinorVersion:true
-    settings:{
-      fileUris:[
-        'https://github.com/qprjack86/Az-Bicep-Demo/blob/main/scripts/DCSetup.ps1'
-      ]
 
-  }
-  protectedSettings: {
-    commandToExecute: 'powershell.exe -ExecutionPolicy Bypass -File DCSetup.ps1' 
-  }
-  }
-}
 // Use PowerShell DSC to deploy Active Directory Domain Services on the domain controller
 //resource domainControllerConfiguration 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
 //  name: '${domainControllerName}/Microsoft.Powershell.DSC'

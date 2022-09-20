@@ -60,6 +60,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
       computerName: vmName
       adminUsername: adminUsername
       adminPassword: adminPassword
+      windowsConfiguration:{
+        timeZone:'GMT Standard Time'
+      }
     }
     storageProfile: {
       imageReference: {
@@ -89,6 +92,27 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
   }
 
  
+    }
+    resource dcinstall 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
+      name: 'dc/install'
+      location:location
+      properties:{
+        publisher:'Microsoft.Compute'
+        typeHandlerVersion:'1.10'
+        autoUpgradeMinorVersion:true
+        settings:{
+          fileUris:[
+            'https://github.com/qprjack86/Az-Bicep-Demo/blob/main/scripts/DCSetup.ps1'
+          ]
+        }
+      protectedSettings: {
+        commandToExecute: 'powershell.exe -ExecutionPolicy Bypass -File DCSetup.ps1' 
+      }
+    
+      }
+    dependsOn:[
+      vm
+    ]
     }
  
 output privateIpAddress string = nic.properties.ipConfigurations[0].properties.privateIPAddress
