@@ -35,7 +35,7 @@ jobs:
           #!/bin/bash
           az group create --name ${{ secrets.Azure_RG }} --location ${{ secrets.ResourceGroupLocation }}
 
-    - name: Deploy Azure Bicep
+    - name: Deploy Azure Bicep Template File
       uses: Azure/arm-deploy@v1
       with:
         resourceGroupName: ${{ secrets.Azure_RG }}

@@ -96,9 +96,6 @@ module domainController 'modules/vm.bicep' = {
 resource dcinstall 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
   name: 'dc/install'
   location:location
-  dependsOn:[
-    domainController
-  ]
   properties:{
     publisher:'Microsoft.Compute'
     typeHandlerVersion:'1.10'
