@@ -93,27 +93,27 @@ module domainController 'modules/vm.bicep' = {
   }
 }
 
-resource dcinstall 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'dcinstall'
-  location: location
-  kind: 'AzurePowerShell'
-  identity:{
-    type:'UserAssigned'
-    userAssignedIdentities:{
-    '/subscriptions/1d997f13-84f0-4047-b288-ffefd5137b68/resourcegroups/kailice/providers/Microsoft.ManagedIdentity/userAssignedIdentities/MI_Bicep': {}  
-      }
-    }
-   properties: {
-    forceUpdateTag: utcValue
-    azPowerShellVersion: '6.4'
-    primaryScriptUri: 'https://raw.githubusercontent.com/qprjack86/Az-Bicep-Demo/main/scripts/DCSetup.ps1'
-    timeout: 'PT1H'
-    cleanupPreference: 'OnSuccess'
-    retentionInterval: 'P1D'
+resource dcinstall 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
+  name: 'dc/install'
+  location:location
+  dependsOn:[
+    domainController
+  ]
+  properties:{
+    publisher:'Microsoft.Compute'
+    typeHandlerVersion:'1.10'
+    autoUpgradeMinorVersion:true
+    settings:{
+      fileUris:[
+        'https://github.com/qprjack86/Az-Bicep-Demo/blob/main/scripts/DCSetup.ps1'
+      ]
+
+  }
+  protectedSettings: {
+    commandToExecute: 'powershell.exe -ExecutionPolicy Bypass -File DCSetup.ps1' 
+  }
   }
 }
-
-
 // Use PowerShell DSC to deploy Active Directory Domain Services on the domain controller
 //resource domainControllerConfiguration 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
 //  name: '${domainControllerName}/Microsoft.Powershell.DSC'
