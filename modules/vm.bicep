@@ -110,9 +110,6 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
       }
     
       }
-    dependsOn:[
-      vm
-    ]
     }
  
 output privateIpAddress string = nic.properties.ipConfigurations[0].properties.privateIPAddress
