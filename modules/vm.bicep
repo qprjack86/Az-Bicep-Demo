@@ -94,7 +94,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
  
     }
     resource dcinstall 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
-      name: 'dc/install'
+      name: 'vm/install'
       location:location
       properties:{
         publisher:'Microsoft.Compute'
