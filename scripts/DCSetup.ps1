@@ -10,7 +10,7 @@ choco install sysinternals -y
 choco install bginfo -y
 #Download Scripts to Set the rest of the Domain up when logged in
 New-Item -Path "c:\" -Name "LabSetup" -ItemType "directory" -Force
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/qprjack86/Az-Bicep-Demo/main/scripts/DomainSetup.ps1" -OutFile "C:\LabSetup\lab_DomainSetup.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/qprjack86/Az-Bicep-Demo/main/scripts/DomainSetup.ps1" -OutFile "C:\LabSetup\DomainSetup.ps1"
 #Setup and Partition Data Disk
 #Get-Disk | Where partitionstyle -eq 'raw' | Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'Data' -Confirm:$false 
 #Allow Ping
