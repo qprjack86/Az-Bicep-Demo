@@ -99,7 +99,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
       location:location
       properties:{
         publisher:'Microsoft.Compute'
-        typeHandlerVersion:'1.10'
+        typeHandlerVersion:'2.0'
         autoUpgradeMinorVersion:true
         settings:{
           fileUris:[
